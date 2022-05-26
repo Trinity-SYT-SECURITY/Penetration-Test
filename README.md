@@ -91,7 +91,17 @@ save -> 將當前設置值保存下來，以便下次啟動MSF終端時仍可使
 ```
 ### 開啟攝像頭
 
++ sessions -u id : 將某個session轉為meterpreter
++ 由shell轉meterpreter 
 
+![image](https://user-images.githubusercontent.com/96654161/170551298-5e7490c3-eedf-4547-8adb-2a0e2f713a98.png)
+
++ sessions -i id
++ ? (查看當前可以使用的命令)
+![image](https://user-images.githubusercontent.com/96654161/170551366-390beaf3-9fec-4584-bd8d-3e76906cdc2b.png)
+![image](https://user-images.githubusercontent.com/96654161/170551422-770a6fbc-db10-471f-940b-972ef34aadc1.png)
+![image](https://user-images.githubusercontent.com/96654161/170551811-67a65e65-2925-4c1d-b39e-57b99f996055.png)
+![image](https://user-images.githubusercontent.com/96654161/170551958-4c27c0c4-ab7a-4d03-a48f-c869a391b668.png)
 
 
 
