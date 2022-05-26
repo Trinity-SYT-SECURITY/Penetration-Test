@@ -43,12 +43,14 @@
 + auxiliary 模塊
   - search ms17_010
  
-![image](https://user-images.githubusercontent.com/96654161/170466825-f9745641-b673-415d-8549-8d974b3251d9.png)
+![image](https://user-images.githubusercontent.com/96654161/170476395-67b42a48-a313-4595-aaac-7a59570dcdbd.png)
+>這裡看到第三項，描述的是for win8，但在前面掃描OS是win7所以不適用
+
   - info auxiliary/scanner/smb/smb_ms17_010
 
 ![image](https://user-images.githubusercontent.com/96654161/170468777-31bd8a4c-e86d-4584-a37c-e2f938d267c9.png)
 
-+ use auxiliary/scanner/smb/smb_ms17_010
++ use auxiliary/scanner/smb/smb_ms17_010 #要使用某模塊都用 use modules
 + options 查看設置 ->required 如果是yes就必須要配置
 ![image](https://user-images.githubusercontent.com/96654161/170471161-04096171-0096-4c96-92e6-fc5cc911859c.png)
 
