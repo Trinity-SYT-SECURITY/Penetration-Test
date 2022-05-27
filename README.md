@@ -34,6 +34,7 @@
      A : 打開操作系統探測和版本探測
  
   - db_nmap -sS -A -T4 192.168.xx.x
+  - 
 ![image](https://user-images.githubusercontent.com/96654161/170462660-3b86cb80-6cd1-4b8b-845f-fccd63797fb7.png)
 
   - db_nmap --script=vuln IP
