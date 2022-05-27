@@ -230,6 +230,7 @@ save -> 將當前設置值保存下來，以便下次啟動MSF終端時仍可使
       + set lport port (要跟msfvenom設置的port一樣)
       + run
 ![image](https://user-images.githubusercontent.com/96654161/170626579-1812f21f-4768-4eae-8c35-b7a3b1507ec0.png)
+  
 ```c=
 // 申請動態內存加載shellcode
 #include <Windows.h>
