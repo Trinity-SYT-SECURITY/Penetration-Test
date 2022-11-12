@@ -180,3 +180,7 @@ crackmapexec smb 192.168.100.0/24 -u user_file.txt -H ntlm_hashFile.txt
 ### 提權
 PsExec
 `psexec.exe -s -i cmd.exe`
+
+###  NTLM
+
+
