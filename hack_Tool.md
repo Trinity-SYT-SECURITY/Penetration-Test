@@ -5,8 +5,8 @@
 + [gobuster](https://github.com/OJ/gobuster)
 + [dirb](https://github.com/v0re/dirb)
 + [ffuf](https://github.com/ffuf/ffuf)
+  + https://github.com/danielmiessler/SecLists
 >ffuf -u http://HTBIP -w /usr/share/seclists/Discovery/DNS/subdomains-top1million-5000.txt -H 'Host: FUZZ.websiteaddress' --fl 533 --mc all
->https://github.com/danielmiessler/SecLists
 + [wfuzz](https://github.com/xmendez/wfuzz)
 >wfuzz -u http://10.129.227.143 -w /usr/share/seclists/Discovery/DNS/subdomains-top1million-5000.txt -H 'Host: FUZZ.seventeen.htb' --hl 532
 + [feroxbuster](https://github.com/epi052/feroxbuster)
